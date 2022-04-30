@@ -410,4 +410,36 @@ class WebRTC {
 
 	}
 
+	addTrack(participantId, mediaStreamTrack, mediaStream = null) {
+
+		let transceiver = this.#participants[participantId].pc.getTransceivers().find(transceiver => transceiver.receiver.track?.kind == mediaStreamTrack.kind && !transceiver.sender.track);
+
+		if (transceiver) { // reuse transceivers
+
+			transceiver.direction = 'sendrecv';
+
+			if ('setStreams' in transceiver.sender && mediaStream) {
+
+				transceiver.sender.setStreams(mediaStream);
+
+			}
+
+			return transceiver.sender.replaceTrack(mediaStreamTrack);
+
+		} else {
+
+			try {
+
+				return Promise.resolve(this.#participants[participantId].pc.addTrack(mediaStreamTrack, mediaStream));
+
+			} catch (err) {
+
+				return Promise.reject(err);
+
+			}
+
+		}
+
+	}
+
 }
