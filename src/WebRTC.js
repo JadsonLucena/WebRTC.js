@@ -735,4 +735,51 @@ class WebRTC {
 
 	}
 
+	setEncodings(participantId, trackId, { // https://www.w3.org/TR/webrtc/#rtcrtpencodingparameters
+		active = true,
+		maxBitrate = undefined, // 44100 * 1000
+		scaleResolutionDownBy = 1.0
+	}, index = 0) {
+
+		let sender = this.#participants[participantId].pc.getSenders().find(sender => sender.track?.id == trackId);
+
+		if (!sender) {
+
+			return Promise.reject(new ReferenceError('trackId not found'));
+
+		}
+
+		const paramsSender = sender.getParameters();
+		if (paramsSender.encodings?.length) paramsSender.encodings = [{}]; // Firefox workaround!
+
+		paramsSender.encodings[index].active = active;
+
+		if (maxBitrate) {
+
+			paramsSender.encodings[index].maxBitrate = maxBitrate;
+
+		} else {
+
+			delete paramsSender.encodings[index].maxBitrate;
+
+		}
+
+		if (sender.track?.kind == 'video') {
+
+			if (scaleResolutionDownBy != 1.0) {
+
+				paramsSender.encodings[index].scaleResolutionDownBy = scaleResolutionDownBy;
+
+			} else {
+
+				delete paramsSender.encodings[index].scaleResolutionDownBy;
+
+			}
+
+		}
+
+		return sender.setParameters(paramsSender);
+
+	}
+
 }
