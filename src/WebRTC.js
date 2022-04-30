@@ -456,4 +456,20 @@ class WebRTC {
 
 	}
 
+	removeTrack(participantId, trackId) {
+
+		let sender = this.#participants[participantId].pc.getSenders().find(sender => sender.track?.id == trackId);
+
+		if (!sender) {
+
+			throw new ReferenceError('trackId not found');
+
+		}
+
+		this.#participants[participantId].pc.removeTrack(sender);
+
+		return !Boolean(this.#participants[participantId].pc.getSenders().find(sender => sender.track?.id == trackId));
+
+	}
+
 }
