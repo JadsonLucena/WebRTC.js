@@ -670,4 +670,69 @@ class WebRTC {
 
 	}
 
+	// https://developer.mozilla.org/en-US/docs/Web/Media/Formats/WebRTC_codecs#customizing_the_codec_list
+	setCodecPreferences(participantId, kind, RTCRtpCodecCapability = [{
+		// https://www.w3.org/TR/webrtc/#rtcrtpcodeccapability
+	}]) {
+
+		if (!['audio', 'video'].includes(kind)) {
+
+			throw new TypeError('Unsupported kind');
+
+		} else if (!Array.isArray(RTCRtpCodecCapability) || !RTCRtpCodecCapability.every(RTCRtpCodecCapability => typeof RTCRtpCodecCapability == 'object' && !['mimeType', 'clockRate', 'channels', 'sdpFmtpLine'].every(attr => !(attr in RTCRtpCodecCapability)))) {
+
+			throw new TypeError('Unsupported RTCRtpCodecCapability');
+
+		}
+
+
+		let transceivers = this.#participants[participantId].pc.getTransceivers().filter(transceiver => transceiver.sender.track?.kind == kind);
+
+		if (transceivers.length == 0) {
+
+			throw new ReferenceError('kind not found');
+
+		}
+
+		let allCodecs = RTCRtpSender.getCapabilities('video').codecs.concat(RTCRtpReceiver.getCapabilities('video').codecs).map(codec => JSON.stringify(codec)).filter((codec, index, arr) => arr.indexOf(codec) == index).map(codec => JSON.parse(codec));
+		let preferredCodecs = RTCRtpCodecCapability.map(dictionary => allCodecs.filter(codecCapability => {
+
+			if ('mimeType' in dictionary && dictionary.mimeType != codecCapability.mimeType) return false;
+			else if ('clockRate' in dictionary && dictionary.clockRate != codecCapability.clockRate) return false;
+			else if ('channels' in dictionary && dictionary.channels != codecCapability.channels) return false;
+			else if ('sdpFmtpLine' in dictionary && dictionary.sdpFmtpLine != codecCapability.sdpFmtpLine) return false;
+
+			return true;
+
+		})).reduce((acc, cur) => acc.concat(cur), []);
+
+		if (preferredCodecs.length == 0) {
+
+			return false;
+
+		}
+
+		let otherCodecs = allCodecs.filter(codec => preferredCodecs.indexOf(codec) == -1);
+
+		transceivers.forEach(transceiver => transceiver.setCodecPreferences(preferredCodecs.concat(otherCodecs)));
+
+		// if (this.#participants[participantId].pc.iceGatheringState == 'complete') {
+		if (this.#participants[participantId].pc.iceGatheringState != 'new') {
+
+			if ('restartIce' in this.#participants[participantId].pc) {
+
+				this.#participants[participantId].pc.restartIce();
+
+			} else { // backwards compatibility
+
+				this.#createOffer(participantId, Object.assign(this.#RTCOfferOptions, {iceRestart: true}));
+
+			}
+
+		}
+
+		return true;
+
+	}
+
 }
