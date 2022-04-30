@@ -217,4 +217,15 @@ class WebRTC {
 
 	}
 
+	// https://www.w3.org/TR/webrtc/#dom-rtcofferoptions-icerestart
+	restart(participantId, RTCOfferOptions = this.#RTCOfferOptions) {
+
+		return Boolean(this.#createOffer(participantId, Object.assign(RTCOfferOptions, {iceRestart: true})));
+
+		// this.#onSignaler({room: room, fromId: this.#id, toId: participantId, data: { type: 'invite' }});
+
+		// return this.close(participantId);
+
+	}
+
 }
