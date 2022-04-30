@@ -591,4 +591,18 @@ class WebRTC {
 
 	}
 
+	addTransceiver(participantId, trackOrKind, { // https://www.w3.org/TR/webrtc/#dictionary-rtcrtptransceiverinit-members
+		direction = 'sendrecv',
+		sendEncodings = [{ // https://www.w3.org/TR/webrtc/#rtcrtpencodingparameters
+			active: true,
+			// maxBitrate: undefined, // 44100 * 1000
+			// scaleResolutionDownBy: 1.0
+		}],
+		streams = this.#stream ? [this.#stream] : []
+	} = {}) {
+
+		return Boolean(this.#participants[participantId].pc.addTransceiver(trackOrKind, { direction, sendEncodings, streams }));
+
+	}
+
 }
