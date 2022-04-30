@@ -822,4 +822,20 @@ class WebRTC {
 
 	}
 
+	sendMessage(participantId, label, data) {
+
+		if (this.#participants[participantId].dc[label].readyState == 'open') {
+
+			this.#participants[participantId].dc[label].send(data);
+
+			return true;
+
+		} else {
+
+			return false;
+
+		}
+
+	}
+
 }
