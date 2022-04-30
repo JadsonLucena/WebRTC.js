@@ -129,4 +129,62 @@ class WebRTC {
 	get RTCAnswerOptions() { return this.#RTCAnswerOptions; }
 	get participants() { return Object.keys(this.#participants); }
 
+	set room(room) {
+
+		if (!['string', 'number'].includes(typeof room)) {
+
+			throw new TypeError('Unsupported Room');
+
+		}
+
+		this.#room = room;
+
+	}
+
+	set stream(stream) {
+
+		if (stream && !(stream instanceof MediaStream)) {
+
+			throw new TypeError('Unsupported Stream');
+
+		}
+
+		this.#stream = stream;
+
+	}
+
+	set RTCConfiguration({ // https://www.w3.org/TR/webrtc/#rtcconfiguration-dictionary
+		bundlePolicy = 'balanced', //max-compat
+		certificates = [],
+		iceCandidatePoolSize = 0,
+		iceServers = [], // https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
+		iceTransportPolicy = 'all',
+		rtcpMuxPolicy = 'require',
+		sdpSemantics = 'unified-plan' // https://webrtc.org/getting-started/unified-plan-transition-guide
+	} = {}) {
+
+		this.#RTCConfiguration = { bundlePolicy, certificates, iceCandidatePoolSize, iceServers, iceTransportPolicy, rtcpMuxPolicy, sdpSemantics };
+
+	}
+
+	set RTCOfferOptions({ // https://www.w3.org/TR/webrtc/#dictionary-rtcofferoptions-members
+		iceRestart = false, // To restart ICE on an active connection
+		offerToReceiveAudio = true, // legacy property
+		offerToReceiveVideo = true, // legacy property
+		voiceActivityDetection = true // Send audio data when there's actually something to broadcast
+	} = {}) {
+
+		this.#RTCOfferOptions = { iceRestart, offerToReceiveAudio, offerToReceiveVideo, voiceActivityDetection };
+
+	}
+
+	set RTCAnswerOptions({ // https://www.w3.org/TR/webrtc/#dictionary-rtcofferansweroptions-members
+		iceRestart = false,
+		voiceActivityDetection = true
+	} = {}) {
+
+		this.#RTCAnswerOptions = { iceRestart, voiceActivityDetection };
+
+	}
+
 }
