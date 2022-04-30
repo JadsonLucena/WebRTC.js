@@ -187,4 +187,26 @@ class WebRTC {
 
 	}
 
+
+	#createOffer(participantId, RTCOfferOptions = this.#RTCOfferOptions) {
+
+		return this.#participants[participantId].pc.createOffer(RTCOfferOptions).then(offer => {
+
+			return this.#participants[participantId].pc.setLocalDescription(offer).then(async () => {
+
+				await this.#onBeforeSendOffer(participantId, {
+					connectionState: this.#participants[participantId].pc.connectionState,
+					iceConnectionState: this.#participants[participantId].pc.iceConnectionState,
+					iceGatheringState: this.#participants[participantId].pc.iceGatheringState,
+					signalingState: this.#participants[participantId].pc.signalingState
+				});
+
+				this.#onSignaler({room: this.#room, fromId: this.#id, toId: participantId, data: this.#participants[participantId].pc.localDescription});
+
+			}).catch(e => this.#onError(participantId, e));
+
+		}).catch(e => this.#onError(participantId, e));
+
+	}
+
 }
