@@ -782,4 +782,44 @@ class WebRTC {
 
 	}
 
+	createDataChannel(participantId, label, { // https://www.w3.org/TR/webrtc/#dictionary-rtcdatachannelinit-members
+		binaryType = 'blob', // https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel/binaryType
+		id = undefined,
+		maxPacketLifeTime = undefined,
+		maxRetransmits = undefined,
+		negotiated = false,
+		ordered = true,
+		protocol = ''
+	} = {}) {
+
+		if (!['blob', 'arraybuffer'].includes(binaryType)) {
+
+			throw new TypeError('Unsupported binaryType');
+
+		}
+
+
+		this.#participants[participantId].dc[label] = this.#participants[participantId].pc.createDataChannel(label, { id, maxPacketLifeTime, maxRetransmits, negotiated, ordered, protocol });
+		this.#participants[participantId].dc[label].onopen = e => this.#onDataChannel(participantId, e);
+		this.#participants[participantId].dc[label].onmessage = e => this.#onMessage(participantId, e);
+		this.#participants[participantId].dc[label].onerror = e => this.#onDataChannel(participantId, e);
+		this.#participants[participantId].dc[label].onclosing = e => this.#onDataChannel(participantId, e);
+		this.#participants[participantId].dc[label].onclose = e => this.#onDataChannel(participantId, e);
+
+
+		try {
+
+			this.#participants[participantId].dc[label].binaryType = binaryType;
+
+		} catch(err) {
+
+			console.error(err);
+
+		}
+
+
+		return Boolean(this.#participants[participantId].dc[label]);
+
+	}
+
 }
