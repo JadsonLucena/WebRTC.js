@@ -228,4 +228,186 @@ class WebRTC {
 
 	}
 
+	#createPeerConnection(participantId) {
+
+		if (!(participantId in this.#participants)) {
+
+			let peer = {
+				pc: new RTCPeerConnection(this.#RTCConfiguration),
+				dc: {}
+			};
+
+			// connection.onaddstream = e => this.#onCallback(participantId, e);
+			peer.pc.onconnectionstatechange = e => {
+
+				this.#onCallback(participantId, e);
+
+				switch (e.target.connectionState) {
+					case 'new':
+
+						// Connecting...
+
+					break;
+					case 'connecting':
+
+						// Connecting...
+
+					break;
+					case 'connected':
+
+						this.#onOpen(participantId, e);
+
+					break;
+					case 'disconnected':
+
+						// Disconnecting...
+
+					break;
+					case 'failed':
+
+						this.#onError(participantId, e);
+
+						if (e.target.iceConnectionState == 'disconnected' && e.target.iceGatheringState == 'complete' ) {
+
+							this.close(participantId);
+
+							this.#onClose(participantId, e);
+
+						}
+
+					break;
+					case 'closed':
+
+						this.close(participantId);
+
+						this.#onClose(participantId, e);
+
+					break;
+				}
+
+			};
+			peer.pc.ondatachannel = e => {
+
+				this.#onCallback(participantId, e);
+
+				peer.dc[e.channel.label] = e.channel;
+				peer.dc[e.channel.label].onopen = e => this.#onDataChannel(participantId, e);
+				peer.dc[e.channel.label].onmessage = e => this.#onMessage(participantId, e);
+				peer.dc[e.channel.label].onerror = e => this.#onDataChannel(participantId, e);
+				peer.dc[e.channel.label].onclosing = e => this.#onDataChannel(participantId, e);
+				peer.dc[e.channel.label].onclose = e => this.#onDataChannel(participantId, e);
+
+			};
+			peer.pc.onicecandidate = e => {
+
+				this.#onCallback(participantId, e);
+
+				if (e.candidate) {
+
+					this.#onSignaler({room: this.#room, fromId: this.#id, toId: participantId, data: e.candidate});
+
+				}
+
+			};
+			peer.pc.onicecandidateerror = e => {
+
+				this.#onError(participantId, e);
+
+				if (e.errorCode >= 300 && e.errorCode <= 699) {
+					/*
+						STUN errors are in the range 300-699. See RFC 5389, section 15.6
+						for a list of codes. TURN adds a few more error codes; see
+						RFC 5766, section 15 for details.
+					*/
+				} else if (e.errorCode >= 700 && e.errorCode <= 799) {
+					/*
+						Server could not be reached; a specific error number is
+						provided but these are not yet specified.
+					*/
+				}
+
+			};
+			peer.pc.oniceconnectionstatechange = e => {
+
+				this.#onCallback(participantId, e);
+
+				switch (e.target.iceConnectionState) {
+					case 'new':
+
+					break;
+					case 'checking':
+
+					break;
+					case 'connected':
+
+					break;
+					case 'completed':
+
+					break;
+					case 'disconnected':
+
+					break;
+					case 'failed':
+
+						if ('restartIce' in e.target) {
+
+							e.target.restartIce();
+
+						} else { // backwards compatibility
+
+							this.#createOffer(participantId, Object.assign(this.#RTCOfferOptions, {iceRestart: true}));
+
+						}
+
+					break;
+					case 'closed':
+
+					break;
+				}
+
+			};
+			peer.pc.onicegatheringstatechange = e => this.#onCallback(participantId, e);
+			peer.pc.onnegotiationneeded = async e => {
+
+				this.#onCallback(participantId, e);
+
+				switch (e.target.iceGatheringState) {
+					case 'new':
+
+						/*for (let track of (this.#stream ? this.#stream.getTracks() : [])) {
+
+							await this.addTrack(participantId, track, this.#stream);
+
+						}
+
+						await this.#onBeforeCreateOffer(participantId, {
+							connectionState: this.#participants[participantId].pc.connectionState,
+							iceConnectionState: this.#participants[participantId].pc.iceConnectionState,
+							iceGatheringState: this.#participants[participantId].pc.iceGatheringState,
+							signalingState: this.#participants[participantId].pc.signalingState
+						});
+
+						this.#createOffer(participantId, this.#RTCOfferOptions);*/
+
+					break;
+					default:
+
+						this.#createOffer(participantId, Object.assign(this.#RTCOfferOptions, {iceRestart: true}));
+
+				}
+
+			};
+			peer.pc.onsignalingstatechange = e => this.#onCallback(participantId, e);
+			peer.pc.ontrack = e => this.#onCallback(participantId, e);
+
+			return peer;
+
+		} else {
+
+			return this.#participants[participantId];
+
+		}
+
+	}
+
 }
