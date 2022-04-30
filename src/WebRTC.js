@@ -442,4 +442,18 @@ class WebRTC {
 
 	}
 
+	replaceTrack(participantId, trackId, mediaStreamTrack) {
+
+		let sender = this.#participants[participantId].pc.getSenders().find(sender => sender.track?.id == trackId);
+
+		if (!sender) {
+
+			return Promise.reject(new ReferenceError('trackId not found'));
+
+		}
+
+		return sender.replaceTrack(mediaStreamTrack);
+
+	}
+
 }
