@@ -838,4 +838,12 @@ class WebRTC {
 
 	}
 
+	closeDataChannel(participantId, label) {
+
+		this.#participants[participantId].dc[label].close();
+
+		return delete this.#participants[participantId].dc[label];
+
+	}
+
 }
