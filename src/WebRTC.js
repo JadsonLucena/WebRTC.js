@@ -209,4 +209,12 @@ class WebRTC {
 
 	}
 
+	close(participantId) {
+
+		this.#participants[participantId].pc.close();
+
+		return delete this.#participants[participantId];
+
+	}
+
 }
