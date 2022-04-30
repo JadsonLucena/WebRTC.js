@@ -654,4 +654,20 @@ class WebRTC {
 
 	}
 
+	stopTransceiver(participantId, mid) {
+
+		let transceiver = this.#participants[participantId].pc.getTransceivers().find(transceiver => transceiver.mid == mid);
+
+		if (!transceiver) {
+
+			throw new ReferenceError('mid not found');
+
+		}
+
+		transceiver.stop();
+
+		return transceiver.direction == 'stopped';
+
+	}
+
 }
