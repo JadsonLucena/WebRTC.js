@@ -121,4 +121,12 @@ class WebRTC {
 
 	}
 
+	get room() { return this.#room; };
+	get id() { return this.#id; };
+	get stream() { return this.#stream; }
+	get RTCConfiguration() { return this.#RTCConfiguration; }
+	get RTCOfferOptions() { return this.#RTCOfferOptions; }
+	get RTCAnswerOptions() { return this.#RTCAnswerOptions; }
+	get participants() { return Object.keys(this.#participants); }
+
 }
