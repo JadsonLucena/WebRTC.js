@@ -605,4 +605,53 @@ class WebRTC {
 
 	}
 
+	getTransceivers(participantId) {
+
+		return this.#participants[participantId].pc.getTransceivers().map(transceiver => {
+
+			return {
+				direction: transceiver.direction,
+				mid: transceiver.mid,
+				stopped: transceiver.stopped,
+				sender: {
+					dtmf: transceiver.sender?.dtmf,
+					parameters: {
+						codecs: transceiver.sender?.getParameters()?.codecs,
+						encodings: transceiver.sender?.getParameters()?.encodings?.map(encoding => {
+		
+							return Object.assign({
+								'active': encoding.active,
+								'maxBitrate': encoding.maxBitrate
+							}, transceiver.sender?.track?.kind == 'video' ? {
+								'scaleResolutionDownBy': encoding.scaleResolutionDownBy
+							} : {});
+		
+						})
+					},
+					track: transceiver.sender?.track
+				},
+				receiver: {
+					dtmf: transceiver.receiver?.dtmf,
+					parameters: {
+						codecs: transceiver.receiver?.getParameters()?.codecs,
+						encodings: transceiver.receiver?.getParameters()?.encodings?.map(encoding => {
+		
+							return Object.assign({
+								'active': encoding.active,
+								'maxBitrate': encoding.maxBitrate
+							}, transceiver.receiver?.track?.kind == 'video' ? {
+								'scaleResolutionDownBy': encoding.scaleResolutionDownBy
+							} : {});
+		
+						})
+					},
+					track: transceiver.receiver?.track
+				}
+				
+			};
+
+		});
+
+	}
+
 }
