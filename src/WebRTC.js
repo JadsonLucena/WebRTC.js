@@ -846,4 +846,668 @@ class WebRTC {
 
 	}
 
+	/*
+		https://w3c.github.io/webrtc-stats/
+		https://www.w3.org/TR/webrtc/#sec.stats-model
+	*/
+	async getStats(participantId, mediaStreamTrack = null, humanReadable = false) {
+
+		let raw = await this.#participants[participantId].pc.getStats(mediaStreamTrack);
+
+		return humanReadable ? raw.then(lines => { // human-readable
+
+			let stats = {
+				local: {
+					network: {
+						iceServer: null,
+						ip: null,
+						port: null,
+						protocol: null,
+						type: null
+					},
+
+					availableIncomingBitrate: null,
+					availableOutgoingBitrate: null,
+					bytesDiscardedOnSend: null,
+					bytesReceived: null,
+					bytesSent: null,
+					circuitBreakerTriggerCount: null,
+					consentExpiredTimestamp: null,
+					consentRequestBytesSent: null,
+					consentRequestsSent: null,
+					currentRoundTripTime: null,
+					firstRequestTimestamp: null,
+					lastPacketReceivedTimestamp: null,
+					lastPacketSentTimestamp: null,
+					lastRequestTimestamp: null,
+					lastResponseTimestamp: null,
+					packetsDiscardedOnSend: null,
+					packetsReceived: null,
+					packetsSent: null,
+					requestBytesSent: null,
+					requestsReceived: null,
+					requestsSent: null,
+					responseBytesSent: null,
+					responsesReceived: null,
+					responsesSent: null,
+					retransmissionsReceived: null,
+					retransmissionsSent: null,
+					state: null,
+					totalRoundTripTime: null,
+
+					inbound: {
+						audio: {
+							tracks: [],
+							codec: {},
+
+							averageRtcpInterval: {},
+							burstDiscardCount: {},
+							burstDiscardRate: {},
+							burstLossCount: {},
+							burstLossRate: {},
+							burstPacketsDiscarded: {},
+							burstPacketsLost: {},
+							bytesReceived: {},
+							estimatedPlayoutTimestamp: {},
+							fecPacketsDiscarded: {},
+							fecPacketsReceived: {},
+							gapDiscardRate: {},
+							gapLossRate: {},
+							headerBytesReceived: {},
+							jitter: {},
+							jitterBufferDelay: {},
+							jitterBufferEmittedCount: {},
+							lastPacketReceivedTimestamp: {},
+							nackCount: {},
+							packetsDiscarded: {},
+							packetsDuplicated: {},
+							packetsFailedDecryption: {},
+							packetsLost: {},
+							packetsReceived: {},
+							packetsRepaired: {},
+							perDscpPacketsReceived: {},
+							ssrc: {},
+							totalProcessingDelay: {},
+
+							audioLevel: {},
+							concealedSamples: {},
+							concealmentEvents: {},
+							insertedSamplesForDeceleration: {},
+							removedSamplesForAcceleration: {},
+							samplesDecodedWithCelt: {},
+							samplesDecodedWithSilk: {},
+							silentConcealedSamples: {},
+							totalAudioEnergy: {},
+							totalSamplesDecoded: {},
+							totalSamplesDuration: {},
+							totalSamplesReceived: {},
+							voiceActivityFlag: {},
+
+						},
+						video: {
+							tracks: [],
+							codec: {},
+
+							averageRtcpInterval: {},
+							burstDiscardCount: {},
+							burstDiscardRate: {},
+							burstLossCount: {},
+							burstLossRate: {},
+							burstPacketsDiscarded: {},
+							burstPacketsLost: {},
+							bytesReceived: {},
+							estimatedPlayoutTimestamp: {},
+							fecPacketsDiscarded: {},
+							fecPacketsReceived: {},
+							gapDiscardRate: {},
+							gapLossRate: {},
+							headerBytesReceived: {},
+							jitter: {},
+							jitterBufferDelay: {},
+							jitterBufferEmittedCount: {},
+							lastPacketReceivedTimestamp: {},
+							nackCount: {},
+							packetsDiscarded: {},
+							packetsDuplicated: {},
+							packetsFailedDecryption: {},
+							packetsLost: {},
+							packetsReceived: {},
+							packetsRepaired: {},
+							perDscpPacketsReceived: {},
+							ssrc: {},
+							totalProcessingDelay: {},
+
+							firCount: {},
+							frameBitDepth: {},
+							frameHeight: {},
+							framesDecoded: {},
+							framesDropped: {},
+							framesPerSecond: {},
+							framesReceived: {},
+							frameWidth: {},
+							fullFramesLost: {},
+							keyFramesDecoded: {},
+							partialFramesLost: {},
+							pliCount: {},
+							qpSum: {},
+							sliCount: {},
+							totalDecodeTime: {},
+							totalInterFrameDelay: {},
+							totalSquaredInterFrameDelay: {},
+
+						}
+					},
+					outbound: {
+						audio: {
+							tracks: [],
+							codec: {},
+
+							averageRtcpInterval: {},
+							bytesDiscardedOnSend: {},
+							fecPacketsSent: {},
+							headerBytesSent: {},
+							lastPacketSentTimestamp: {},
+							nackCount: {},
+							packetsDiscardedOnSend: {},
+							perDscpPacketsSent: {},
+							retransmittedPacketsSent: {},
+							retransmittedBytesSent: {},
+							targetBitrate: {},
+							totalPacketSendDelay: {},
+
+							samplesEncodedWithSilk: {},
+							samplesEncodedWithCelt: {},
+							totalSamplesSent: {},
+							voiceActivityFlag: {},
+
+						},
+						video: {
+							tracks: [],
+							codec: {},
+
+							averageRtcpInterval: {},
+							bytesDiscardedOnSend: {},
+							fecPacketsSent: {},
+							headerBytesSent: {},
+							lastPacketSentTimestamp: {},
+							nackCount: {},
+							packetsDiscardedOnSend: {},
+							perDscpPacketsSent: {},
+							retransmittedPacketsSent: {},
+							retransmittedBytesSent: {},
+							targetBitrate: {},
+							totalPacketSendDelay: {},
+
+							firCount: {},
+							frameBitDepth: {},
+							frameHeight: {},
+							frameWidth: {},
+							framesDiscardedOnSend: {},
+							framesEncoded: {},
+							framesPerSecond: {},
+							framesSent: {},
+							hugeFramesSent: {},
+							keyFramesEncoded: {},
+							pliCount: {},
+							qpSum: {},
+							qualityLimitationDurations: {},
+							qualityLimitationReason: {},
+							qualityLimitationResolutionChanges: {},
+							sliCount: {},
+							totalEncodedBytesTarget: {},
+							totalEncodeTime: {},
+
+						}
+					}
+				},
+				remote: {
+					network: {
+						iceServer: null,
+						ip: null,
+						port: null,
+						protocol: null,
+						type: null
+					},
+
+					inbound: {
+						audio: {
+							tracks: [],
+							codec: {},
+
+							burstDiscardCount: {},
+							burstDiscardRate: {},
+							burstLossCount: {},
+							burstLossRate: {},
+							burstPacketsDiscarded: {},
+							burstPacketsLost: {},
+							fractionLost: {},
+							gapDiscardRate: {},
+							gapLossRate: {},
+							jitter: {},
+							packetsDiscarded: {},
+							packetsLost: {},
+							packetsReceived: {},
+							packetsRepaired: {},
+							reportsReceived: {},
+							roundTripTime: {},
+							roundTripTimeMeasurements: {},
+							ssrc: {},
+							totalRoundTripTime: {},
+
+						},
+						video: {
+							tracks: [],
+							codec: {},
+
+							burstDiscardCount: {},
+							burstDiscardRate: {},
+							burstLossCount: {},
+							burstLossRate: {},
+							burstPacketsDiscarded: {},
+							burstPacketsLost: {},
+							fractionLost: {},
+							gapDiscardRate: {},
+							gapLossRate: {},
+							jitter: {},
+							packetsDiscarded: {},
+							packetsLost: {},
+							packetsReceived: {},
+							packetsRepaired: {},
+							reportsReceived: {},
+							roundTripTime: {},
+							roundTripTimeMeasurements: {},
+							ssrc: {},
+							totalRoundTripTime: {},
+
+							framesDropped: {},
+							partialFramesLost: {},
+							fullFramesLost: {},
+
+						}
+					},
+					outbound: {
+						audio: {
+							tracks: [],
+							codec: {},
+
+							bytesSent: {},
+							packetsSent: {},
+							remoteTimestamp: {},
+							reportsSent: {},
+							ssrc: {},
+
+						},
+						video: {
+							tracks: [],
+							codec: {},
+
+							bytesSent: {},
+							packetsSent: {},
+							remoteTimestamp: {},
+							reportsSent: {},
+							ssrc: {},
+
+						}
+					}
+
+				},
+				timestamp: Date.now()
+			}
+
+			lines.forEach(line => {
+
+				switch (line.type) {
+					case 'local-candidate':
+
+						stats.local.network.iceServer = line.candidateType == 'host' ? 'localhost' : (line.candidateType == 'relay' ? 'TURN' : 'STUN');
+						stats.local.network.ip = line.ip;
+						stats.local.network.port = line.port;
+						stats.local.network.protocol = line.protocol;
+						if ('networkType' in line) stats.local.network.type = line.networkType;
+
+						stats.timestamp = line.timestamp;
+
+					break;
+					case 'remote-candidate':
+
+						stats.remote.network.iceServer = line.candidateType == 'host' ? 'localhost' : (line.candidateType == 'relay' ? 'TURN' : 'STUN');
+						stats.remote.network.ip = line.ip;
+						stats.remote.network.port = line.port;
+						stats.remote.network.protocol = line.protocol;
+						if ('networkType' in line) stats.remote.network.type = line.networkType;
+
+					break;
+					case 'candidate-pair':
+
+						if ('availableIncomingBitrate' in line) stats.local.availableIncomingBitrate = line.availableIncomingBitrate;
+						if ('availableOutgoingBitrate' in line) stats.local.availableOutgoingBitrate = line.availableOutgoingBitrate;
+						if ('bytesDiscardedOnSend' in line) stats.local.bytesDiscardedOnSend = line.bytesDiscardedOnSend;
+						if ('bytesReceived' in line) stats.local.bytesReceived = line.bytesReceived;
+						if ('bytesSent' in line) stats.local.bytesSent = line.bytesSent;
+						if ('circuitBreakerTriggerCount' in line) stats.local.circuitBreakerTriggerCount = line.circuitBreakerTriggerCount;
+						if ('consentExpiredTimestamp' in line) stats.local.consentExpiredTimestamp = line.consentExpiredTimestamp;
+						if ('consentRequestBytesSent' in line) stats.local.consentRequestBytesSent = line.consentRequestBytesSent;
+						if ('consentRequestsSent' in line) stats.local.consentRequestsSent = line.consentRequestsSent;
+						if ('currentRoundTripTime' in line) stats.local.currentRoundTripTime = line.currentRoundTripTime;
+						if ('firstRequestTimestamp' in line) stats.local.firstRequestTimestamp = line.firstRequestTimestamp;
+						if ('lastPacketReceivedTimestamp' in line) stats.local.lastPacketReceivedTimestamp = line.lastPacketReceivedTimestamp;
+						if ('lastPacketSentTimestamp' in line) stats.local.lastPacketSentTimestamp = line.lastPacketSentTimestamp;
+						if ('lastRequestTimestamp' in line) stats.local.lastRequestTimestamp = line.lastRequestTimestamp;
+						if ('lastResponseTimestamp' in line) stats.local.lastResponseTimestamp = line.lastResponseTimestamp;
+						if ('packetsDiscardedOnSend' in line) stats.local.packetsDiscardedOnSend = line.packetsDiscardedOnSend;
+						if ('packetsReceived' in line) stats.local.packetsReceived = line.packetsReceived;
+						if ('packetsSent' in line) stats.local.packetsSent = line.packetsSent;
+						if ('requestBytesSent' in line) stats.local.requestBytesSent = line.requestBytesSent;
+						if ('requestsReceived' in line) stats.local.requestsReceived = line.requestsReceived;
+						if ('requestsSent' in line) stats.local.requestsSent = line.requestsSent;
+						if ('responseBytesSent' in line) stats.local.responseBytesSent = line.responseBytesSent;
+						if ('responsesReceived' in line) stats.local.responsesReceived = line.responsesReceived;
+						if ('responsesSent' in line) stats.local.responsesSent = line.responsesSent;
+						if ('retransmissionsReceived' in line) stats.local.retransmissionsReceived = line.retransmissionsReceived;
+						if ('retransmissionsSent' in line) stats.local.retransmissionsSent = line.retransmissionsSent;
+						if ('state' in line) stats.local.state = line.state;
+						if ('totalRoundTripTime' in line) stats.local.totalRoundTripTime = line.totalRoundTripTime;
+
+					break;
+					case 'transport':
+
+						if ('bytesSent' in line) stats.local.bytesSent = line.bytesSent;
+						if ('bytesReceived' in line) stats.local.bytesReceived = line.bytesReceived;
+						if ('packetsSent' in line) stats.local.packetsSent = line.packetsSent;
+						if ('packetsReceived' in line) stats.local.packetsReceived = line.packetsReceived;
+
+					break;
+					case 'inbound-rtp':
+
+						stats.local.inbound[line.kind].tracks.push(line.id);
+
+						if ('averageRtcpInterval' in line) stats.local.inbound[line.kind].averageRtcpInterval[line.id] = line.averageRtcpInterval;
+						if ('burstDiscardCount' in line) stats.local.inbound[line.kind].burstDiscardCount[line.id] = line.burstDiscardCount;
+						if ('burstDiscardRate' in line) stats.local.inbound[line.kind].burstDiscardRate[line.id] = line.burstDiscardRate;
+						if ('burstLossCount' in line) stats.local.inbound[line.kind].burstLossCount[line.id] = line.burstLossCount;
+						if ('burstLossRate' in line) stats.local.inbound[line.kind].burstLossRate[line.id] = line.burstLossRate;
+						if ('burstPacketsDiscarded' in line) stats.local.inbound[line.kind].burstPacketsDiscarded[line.id] = line.burstPacketsDiscarded;
+						if ('burstPacketsLost' in line) stats.local.inbound[line.kind].burstPacketsLost[line.id] = line.burstPacketsLost;
+						if ('bytesReceived' in line) stats.local.inbound[line.kind].bytesReceived[line.id] = line.bytesReceived;
+						if ('estimatedPlayoutTimestamp' in line) stats.local.inbound[line.kind].estimatedPlayoutTimestamp[line.id] = line.estimatedPlayoutTimestamp;
+						if ('fecPacketsDiscarded' in line) stats.local.inbound[line.kind].fecPacketsDiscarded[line.id] = line.fecPacketsDiscarded;
+						if ('fecPacketsReceived' in line) stats.local.inbound[line.kind].fecPacketsReceived[line.id] = line.fecPacketsReceived;
+						if ('gapDiscardRate' in line) stats.local.inbound[line.kind].gapDiscardRate[line.id] = line.gapDiscardRate;
+						if ('gapLossRate' in line) stats.local.inbound[line.kind].gapLossRate[line.id] = line.gapLossRate;
+						if ('headerBytesReceived' in line) stats.local.inbound[line.kind].headerBytesReceived[line.id] = line.headerBytesReceived;
+						if ('jitter' in line) stats.local.inbound[line.kind].jitter[line.id] = line.jitter;
+						if ('jitterBufferDelay' in line) stats.local.inbound[line.kind].jitterBufferDelay[line.id] = line.jitterBufferDelay;
+						if ('jitterBufferEmittedCount' in line) stats.local.inbound[line.kind].jitterBufferEmittedCount[line.id] = line.jitterBufferEmittedCount;
+						if ('lastPacketReceivedTimestamp' in line) stats.local.inbound[line.kind].lastPacketReceivedTimestamp[line.id] = line.lastPacketReceivedTimestamp;
+						if ('nackCount' in line) stats.local.inbound[line.kind].nackCount[line.id] = line.nackCount;
+						if ('packetsDiscarded' in line) stats.local.inbound[line.kind].packetsDiscarded[line.id] = line.packetsDiscarded;
+						if ('packetsDuplicated' in line) stats.local.inbound[line.kind].packetsDuplicated[line.id] = line.packetsDuplicated;
+						if ('packetsFailedDecryption' in line) stats.local.inbound[line.kind].packetsFailedDecryption[line.id] = line.packetsFailedDecryption;
+						if ('packetsLost' in line) stats.local.inbound[line.kind].packetsLost[line.id] = line.packetsLost;
+						if ('packetsReceived' in line) stats.local.inbound[line.kind].packetsReceived[line.id] = line.packetsReceived;
+						if ('packetsRepaired' in line) stats.local.inbound[line.kind].packetsRepaired[line.id] = line.packetsRepaired;
+						if ('perDscpPacketsReceived' in line) stats.local.inbound[line.kind].perDscpPacketsReceived[line.id] = line.perDscpPacketsReceived;
+						if ('ssrc' in line) stats.local.inbound[line.kind].ssrc[line.id] = line.ssrc;
+						if ('totalProcessingDelay' in line) stats.local.inbound[line.kind].totalProcessingDelay[line.id] = line.totalProcessingDelay;
+
+						if (line.kind == 'audio') {
+
+							if ('codecId' in line) {
+
+								stats.local.inbound.audio.codec[line.id] = lines.get(line.codecId);
+								stats.local.inbound.audio.codec[line.id] = {
+									channels: stats.local.inbound.audio.codec[line.id].channels,
+									clockRate: stats.local.inbound.audio.codec[line.id].clockRate,
+									id: stats.local.inbound.audio.codec[line.id].id,
+									mimeType: stats.local.inbound.audio.codec[line.id].mimeType,
+									payloadType: stats.local.inbound.audio.codec[line.id].payloadType,
+									sdpFmtpLine: stats.local.inbound.audio.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+							if ('audioLevel' in line) stats.local.inbound.audio.audioLevel[line.id] = line.audioLevel;
+							if ('concealedSamples' in line) stats.local.inbound.audio.concealedSamples[line.id] = line.concealedSamples;
+							if ('concealmentEvents' in line) stats.local.inbound.audio.concealmentEvents[line.id] = line.concealmentEvents;
+							if ('insertedSamplesForDeceleration' in line) stats.local.inbound.audio.insertedSamplesForDeceleration[line.id] = line.insertedSamplesForDeceleration;
+							if ('removedSamplesForAcceleration' in line) stats.local.inbound.audio.removedSamplesForAcceleration[line.id] = line.removedSamplesForAcceleration;
+							if ('samplesDecodedWithCelt' in line) stats.local.inbound.audio.samplesDecodedWithCelt[line.id] = line.samplesDecodedWithCelt;
+							if ('samplesDecodedWithSilk' in line) stats.local.inbound.audio.samplesDecodedWithSilk[line.id] = line.samplesDecodedWithSilk;
+							if ('silentConcealedSamples' in line) stats.local.inbound.audio.silentConcealedSamples[line.id] = line.silentConcealedSamples;
+							if ('totalAudioEnergy' in line) stats.local.inbound.audio.totalAudioEnergy[line.id] = line.totalAudioEnergy;
+							if ('totalSamplesDecoded' in line) stats.local.inbound.audio.totalSamplesDecoded[line.id] = line.totalSamplesDecoded;
+							if ('totalSamplesDuration' in line) stats.local.inbound.audio.totalSamplesDuration[line.id] = line.totalSamplesDuration;
+							if ('totalSamplesReceived' in line) stats.local.inbound.audio.totalSamplesReceived[line.id] = line.totalSamplesReceived;
+							if ('voiceActivityFlag' in line) stats.local.inbound.audio.voiceActivityFlag[line.id] = line.voiceActivityFlag;
+
+						} else if (line.kind == 'video') {
+
+							if ('codecId' in line) {
+
+								stats.local.inbound.video.codec[line.id] = lines.get(line.codecId);
+								stats.local.inbound.video.codec[line.id] = {
+									clockRate: stats.local.inbound.video.codec[line.id].clockRate,
+									id: stats.local.inbound.video.codec[line.id].id,
+									mimeType: stats.local.inbound.video.codec[line.id].mimeType,
+									payloadType: stats.local.inbound.video.codec[line.id].payloadType,
+									sdpFmtpLine: stats.local.inbound.video.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+							if ('firCount' in line) stats.local.inbound.video.firCount[line.id] = line.firCount;
+							if ('frameBitDepth' in line) stats.local.inbound.video.frameBitDepth[line.id] = line.frameBitDepth;
+							if ('frameHeight' in line) stats.local.inbound.video.frameHeight[line.id] = line.frameHeight;
+							if ('framesDecoded' in line) stats.local.inbound.video.framesDecoded[line.id] = line.framesDecoded;
+							if ('framesDropped' in line) stats.local.inbound.video.framesDropped[line.id] = line.framesDropped;
+							if ('framesPerSecond' in line) stats.local.inbound.video.framesPerSecond[line.id] = line.framesPerSecond;
+							if ('framesReceived' in line) stats.local.inbound.video.framesReceived[line.id] = line.framesReceived;
+							if ('frameWidth' in line) stats.local.inbound.video.frameWidth[line.id] = line.frameWidth;
+							if ('fullFramesLost' in line) stats.local.inbound.video.fullFramesLost[line.id] = line.fullFramesLost;
+							if ('keyFramesDecoded' in line) stats.local.inbound.video.keyFramesDecoded[line.id] = line.keyFramesDecoded;
+							if ('partialFramesLost' in line) stats.local.inbound.video.partialFramesLost[line.id] = line.partialFramesLost;
+							if ('pliCount' in line) stats.local.inbound.video.pliCount[line.id] = line.pliCount;
+							if ('qpSum' in line) stats.local.inbound.video.qpSum[line.id] = line.qpSum;
+							if ('sliCount' in line) stats.local.inbound.video.sliCount[line.id] = line.sliCount;
+							if ('totalDecodeTime' in line) stats.local.inbound.video.totalDecodeTime[line.id] = line.totalDecodeTime;
+							if ('totalInterFrameDelay' in line) stats.local.inbound.video.totalInterFrameDelay[line.id] = line.totalInterFrameDelay;
+							if ('totalSquaredInterFrameDelay' in line) stats.local.inbound.video.totalSquaredInterFrameDelay[line.id] = line.totalSquaredInterFrameDelay;
+
+						}
+
+					break;
+					case 'outbound-rtp':
+
+						stats.local.outbound[line.kind].tracks.push(line.id);
+
+						if ('averageRtcpInterval' in line) stats.local.outbound[line.kind].averageRtcpInterval[line.id] = line.averageRtcpInterval;
+						if ('bytesDiscardedOnSend' in line) stats.local.outbound[line.kind].bytesDiscardedOnSend[line.id] = line.bytesDiscardedOnSend;
+						if ('fecPacketsSent' in line) stats.local.outbound[line.kind].fecPacketsSent[line.id] = line.fecPacketsSent;
+						if ('headerBytesSent' in line) stats.local.outbound[line.kind].headerBytesSent[line.id] = line.headerBytesSent;
+						if ('lastPacketSentTimestamp' in line) stats.local.outbound[line.kind].lastPacketSentTimestamp[line.id] = line.lastPacketSentTimestamp;
+						if ('nackCount' in line) stats.local.outbound[line.kind].nackCount[line.id] = line.nackCount;
+						if ('packetsDiscardedOnSend' in line) stats.local.outbound[line.kind].packetsDiscardedOnSend[line.id] = line.packetsDiscardedOnSend;
+						if ('perDscpPacketsSent' in line) stats.local.outbound[line.kind].perDscpPacketsSent[line.id] = line.perDscpPacketsSent;
+						if ('retransmittedPacketsSent' in line) stats.local.outbound[line.kind].retransmittedPacketsSent[line.id] = line.retransmittedPacketsSent;
+						if ('retransmittedBytesSent' in line) stats.local.outbound[line.kind].retransmittedBytesSent[line.id] = line.retransmittedBytesSent;
+						if ('targetBitrate' in line) stats.local.outbound[line.kind].targetBitrate[line.id] = line.targetBitrate;
+						if ('totalPacketSendDelay' in line) stats.local.outbound[line.kind].totalPacketSendDelay[line.id] = line.totalPacketSendDelay;
+
+						if (line.kind == 'audio') {
+
+							if ('codecId' in line) {
+
+								stats.local.outbound.audio.codec[line.id] = lines.get(line.codecId);
+								stats.local.outbound.audio.codec[line.id] = {
+									channels: stats.local.outbound.audio.codec[line.id].channels,
+									clockRate: stats.local.outbound.audio.codec[line.id].clockRate,
+									id: stats.local.outbound.audio.codec[line.id].id,
+									mimeType: stats.local.outbound.audio.codec[line.id].mimeType,
+									payloadType: stats.local.outbound.audio.codec[line.id].payloadType,
+									sdpFmtpLine: stats.local.outbound.audio.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+							if ('samplesEncodedWithSilk' in line) stats.local.outbound.audio.samplesEncodedWithSilk[line.id] = line.samplesEncodedWithSilk;
+							if ('samplesEncodedWithCelt' in line) stats.local.outbound.audio.samplesEncodedWithCelt[line.id] = line.samplesEncodedWithCelt;
+							if ('totalSamplesSent' in line) stats.local.outbound.audio.totalSamplesSent[line.id] = line.totalSamplesSent;
+							if ('voiceActivityFlag' in line) stats.local.outbound.audio.voiceActivityFlag[line.id] = line.voiceActivityFlag;
+
+						} else if (line.kind == 'video') {
+
+							if ('codecId' in line) {
+
+								stats.local.outbound.video.codec[line.id] = lines.get(line.codecId);
+								stats.local.outbound.video.codec[line.id] = {
+									clockRate: stats.local.outbound.video.codec[line.id].clockRate,
+									id: stats.local.outbound.video.codec[line.id].id,
+									mimeType: stats.local.outbound.video.codec[line.id].mimeType,
+									payloadType: stats.local.outbound.video.codec[line.id].payloadType,
+									sdpFmtpLine: stats.local.outbound.video.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+							if ('firCount' in line) stats.local.outbound.video.firCount[line.id] = line.firCount;
+							if ('frameBitDepth' in line) stats.local.outbound.video.frameBitDepth[line.id] = line.frameBitDepth;
+							if ('frameHeight' in line) stats.local.outbound.video.frameHeight[line.id] = line.frameHeight;
+							if ('frameWidth' in line) stats.local.outbound.video.frameWidth[line.id] = line.frameWidth;
+							if ('framesDiscardedOnSend' in line) stats.local.outbound.video.framesDiscardedOnSend[line.id] = line.framesDiscardedOnSend;
+							if ('framesEncoded' in line) stats.local.outbound.video.framesEncoded[line.id] = line.framesEncoded;
+							if ('framesPerSecond' in line) stats.local.outbound.video.framesPerSecond[line.id] = line.framesPerSecond;
+							if ('framesSent' in line) stats.local.outbound.video.framesSent[line.id] = line.framesSent;
+							if ('hugeFramesSent' in line) stats.local.outbound.video.hugeFramesSent[line.id] = line.hugeFramesSent;
+							if ('keyFramesEncoded' in line) stats.local.outbound.video.keyFramesEncoded[line.id] = line.keyFramesEncoded;
+							if ('pliCount' in line) stats.local.outbound.video.pliCount[line.id] = line.pliCount;
+							if ('qpSum' in line) stats.local.outbound.video.qpSum[line.id] = line.qpSum;
+							if ('qualityLimitationDurations' in line) stats.local.outbound.video.qualityLimitationDurations[line.id] = line.qualityLimitationDurations;
+							if ('qualityLimitationReason' in line) stats.local.outbound.video.qualityLimitationReason[line.id] = line.qualityLimitationReason;
+							if ('qualityLimitationResolutionChanges' in line) stats.local.outbound.video.qualityLimitationResolutionChanges[line.id] = line.qualityLimitationResolutionChanges;
+							if ('sliCount' in line) stats.local.outbound.video.sliCount[line.id] = line.sliCount;
+							if ('totalEncodedBytesTarget' in line) stats.local.outbound.video.totalEncodedBytesTarget[line.id] = line.totalEncodedBytesTarget;
+							if ('totalEncodeTime' in line) stats.local.outbound.video.totalEncodeTime[line.id] = line.totalEncodeTime;
+
+						}
+
+					break;
+					case 'remote-inbound-rtp':
+
+						stats.remote.inbound[line.kind].tracks.push(line.id);
+
+						if ('burstDiscardCount' in line) stats.remote.inbound[line.kind].burstDiscardCount[line.id] = line.burstDiscardCount;
+						if ('burstDiscardRate' in line) stats.remote.inbound[line.kind].burstDiscardRate[line.id] = line.burstDiscardRate;
+						if ('burstLossCount' in line) stats.remote.inbound[line.kind].burstLossCount[line.id] = line.burstLossCount;
+						if ('burstLossRate' in line) stats.remote.inbound[line.kind].burstLossRate[line.id] = line.burstLossRate;
+						if ('burstPacketsDiscarded' in line) stats.remote.inbound[line.kind].burstPacketsDiscarded[line.id] = line.burstPacketsDiscarded;
+						if ('burstPacketsLost' in line) stats.remote.inbound[line.kind].burstPacketsLost[line.id] = line.burstPacketsLost;
+						if ('fractionLost' in line) stats.remote.inbound[line.kind].fractionLost[line.id] = line.fractionLost;
+						if ('gapDiscardRate' in line) stats.remote.inbound[line.kind].gapDiscardRate[line.id] = line.gapDiscardRate;
+						if ('gapLossRate' in line) stats.remote.inbound[line.kind].gapLossRate[line.id] = line.gapLossRate;
+						if ('jitter' in line) stats.remote.inbound[line.kind].jitter[line.id] = line.jitter;
+						if ('packetsDiscarded' in line) stats.remote.inbound[line.kind].packetsDiscarded[line.id] = line.packetsDiscarded;
+						if ('packetsLost' in line) stats.remote.inbound[line.kind].packetsLost[line.id] = line.packetsLost;
+						if ('packetsReceived' in line) stats.remote.inbound[line.kind].packetsReceived[line.id] = line.packetsReceived;
+						if ('packetsRepaired' in line) stats.remote.inbound[line.kind].packetsRepaired[line.id] = line.packetsRepaired;
+						if ('reportsReceived' in line) stats.remote.inbound[line.kind].reportsReceived[line.id] = line.reportsReceived;
+						if ('roundTripTime' in line) stats.remote.inbound[line.kind].roundTripTime[line.id] = line.roundTripTime;
+						if ('roundTripTimeMeasurements' in line) stats.remote.inbound[line.kind].roundTripTimeMeasurements[line.id] = line.roundTripTimeMeasurements;
+						if ('ssrc' in line) stats.remote.inbound[line.kind].ssrc[line.id] = line.ssrc;
+						if ('totalRoundTripTime' in line) stats.remote.inbound[line.kind].totalRoundTripTime[line.id] = line.totalRoundTripTime;
+
+						if (line.kind == 'audio') {
+
+							if ('codecId' in line) {
+
+								stats.remote.inbound.audio.codec[line.id] = lines.get(line.codecId);
+								stats.remote.inbound.audio.codec[line.id] = {
+									channels: stats.remote.inbound.audio.codec[line.id].channels,
+									clockRate: stats.remote.inbound.audio.codec[line.id].clockRate,
+									id: stats.remote.inbound.audio.codec[line.id].id,
+									mimeType: stats.remote.inbound.audio.codec[line.id].mimeType,
+									payloadType: stats.remote.inbound.audio.codec[line.id].payloadType,
+									sdpFmtpLine: stats.remote.inbound.audio.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+						} else if (line.kind == 'video') {
+
+							if ('codecId' in line) {
+
+								stats.remote.inbound.video.codec[line.id] = lines.get(line.codecId);
+								stats.remote.inbound.video.codec[line.id] = {
+									clockRate: stats.remote.inbound.video.codec[line.id].clockRate,
+									id: stats.remote.inbound.video.codec[line.id].id,
+									mimeType: stats.remote.inbound.video.codec[line.id].mimeType,
+									payloadType: stats.remote.inbound.video.codec[line.id].payloadType,
+									sdpFmtpLine: stats.remote.inbound.video.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+							if ('framesDropped' in line) stats.remote.inbound.video.framesDropped[line.id] = line.framesDropped;
+							if ('partialFramesLost' in line) stats.remote.inbound.video.partialFramesLost[line.id] = line.partialFramesLost;
+							if ('fullFramesLost' in line) stats.remote.inbound.video.fullFramesLost[line.id] = line.fullFramesLost;
+
+						}
+
+					break;
+					case 'remote-outbound-rtp':
+
+						stats.remote.outbound[line.kind].tracks.push(line.id);
+
+						if ('bytesSent' in line) stats.remote.outbound[line.kind].bytesSent[line.id] = line.bytesSent;
+						if ('packetsSent' in line) stats.remote.outbound[line.kind].packetsSent[line.id] = line.packetsSent;
+						if ('remoteTimestamp' in line) stats.remote.outbound[line.kind].remoteTimestamp[line.id] = line.remoteTimestamp;
+						if ('reportsSent' in line) stats.remote.outbound[line.kind].reportsSent[line.id] = line.reportsSent;
+						if ('ssrc' in line) stats.remote.outbound[line.kind].ssrc[line.id] = line.ssrc;
+
+						if (line.kind == 'audio') {
+
+							if ('codecId' in line) {
+
+								stats.remote.outbound.audio.codec[line.id] = lines.get(line.codecId);
+								stats.remote.outbound.audio.codec[line.id] = {
+									channels: stats.remote.outbound.audio.codec[line.id].channels,
+									clockRate: stats.remote.outbound.audio.codec[line.id].clockRate,
+									id: stats.remote.outbound.audio.codec[line.id].id,
+									mimeType: stats.remote.outbound.audio.codec[line.id].mimeType,
+									payloadType: stats.remote.outbound.audio.codec[line.id].payloadType,
+									sdpFmtpLine: stats.remote.outbound.audio.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+						} else if (line.kind == 'video') {
+
+							if ('codecId' in line) {
+
+								stats.remote.outbound.video.codec[line.id] = lines.get(line.codecId);
+								stats.remote.outbound.video.codec[line.id] = {
+									clockRate: stats.remote.outbound.video.codec[line.id].clockRate,
+									id: stats.remote.outbound.video.codec[line.id].id,
+									mimeType: stats.remote.outbound.video.codec[line.id].mimeType,
+									payloadType: stats.remote.outbound.video.codec[line.id].payloadType,
+									sdpFmtpLine: stats.remote.outbound.video.codec[line.id].sdpFmtpLine
+								};
+
+							}
+
+						}
+
+					break;
+				}
+
+			});
+
+			// if (stats.local.totalRoundTripTime && stats.local.responsesReceived) stats.local.averageRoundTripTime = stats.local.totalRoundTripTime / stats.local.responsesReceived;
+			// if (stats.local.packetsSent && stats.local.packetsReceived) stats.local.fractionLost = (stats.local.packetsSent - stats.local.packetsReceived) / stats.local.packetsSent; // if fractionLost is > 0.3, we have probably found the culprit
+
+			return stats;
+
+		}) : raw; 
+
+	}
+
 }
