@@ -119,6 +119,9 @@ class WebRTC {
 
 		this.#participants = {};
 
+
+		this.#onSignaler({room: room, fromId: this.#id, toId: 'broadcast', data: { type: 'invite' }});
+
 	}
 
 	get room() { return this.#room; };
@@ -469,6 +472,122 @@ class WebRTC {
 		this.#participants[participantId].pc.removeTrack(sender);
 
 		return !Boolean(this.#participants[participantId].pc.getSenders().find(sender => sender.track?.id == trackId));
+
+	}
+
+	// https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Perfect_negotiation
+	async signaler({room, fromId, toId, data}) {
+
+		if (room == this.#room && fromId != this.#id && (toId == this.#id || toId == 'broadcast')) {
+
+			switch (data.type) {
+				case 'invite':
+
+					this.#participants[fromId] = this.#createPeerConnection(fromId);
+
+					for (let track of (this.#stream ? this.#stream.getTracks() : [])) {
+
+						await this.addTrack(fromId, track, this.#stream);
+
+					}
+
+					await this.#onBeforeCreateOffer(fromId, {
+						connectionState: this.#participants[fromId].pc.connectionState,
+						iceConnectionState: this.#participants[fromId].pc.iceConnectionState,
+						iceGatheringState: this.#participants[fromId].pc.iceGatheringState,
+						signalingState: this.#participants[fromId].pc.signalingState
+					});
+
+					await this.#createOffer(fromId, this.#RTCOfferOptions);
+
+				break;
+				case 'offer':
+
+					if (fromId in this.#participants) {
+
+						if (this.#participants[fromId].pc.signalingState == 'have-local-offer') { // Deals with competition between two pairs
+
+							if (this.#id < fromId) {
+
+								await this.#participants[fromId].pc.setLocalDescription({type: 'rollback'}).catch(e => this.#onError(fromId, e));
+
+								if (this.#participants[fromId].pc.signalingState != 'stable') {
+
+									this.close(fromId);
+									this.#participants[fromId] = this.#createPeerConnection(fromId);
+
+								}
+
+							} else {
+
+								return null;
+
+							}
+
+						}
+
+					} else {
+
+						this.#participants[fromId] = this.#createPeerConnection(fromId);
+
+					}
+
+					await this.#participants[fromId].pc.setRemoteDescription(data).then(async () => {
+
+						if (this.#participants[fromId].pc.iceGatheringState == 'new') { // don't set the tracks on a restartIce
+
+							for (let track of (this.#stream ? this.#stream.getTracks() : [])) {
+
+								await this.addTrack(fromId, track, this.#stream);
+
+							}
+
+						}
+
+						await this.#onBeforeCreateAnswer(fromId, {
+							connectionState: this.#participants[fromId].pc.connectionState,
+							iceConnectionState: this.#participants[fromId].pc.iceConnectionState,
+							iceGatheringState: this.#participants[fromId].pc.iceGatheringState,
+							signalingState: this.#participants[fromId].pc.signalingState
+						});
+
+						this.#participants[fromId].pc.createAnswer(this.#RTCAnswerOptions).then(answer => {
+
+							this.#participants[fromId].pc.setLocalDescription(answer).then(async () => {
+
+								await this.#onBeforeSendAnswer(fromId, {
+									connectionState: this.#participants[fromId].pc.connectionState,
+									iceConnectionState: this.#participants[fromId].pc.iceConnectionState,
+									iceGatheringState: this.#participants[fromId].pc.iceGatheringState,
+									signalingState: this.#participants[fromId].pc.signalingState
+								});
+
+								this.#onSignaler({room: this.#room, fromId: this.#id, toId: fromId, data: this.#participants[fromId].pc.localDescription});
+
+							}).catch(e => this.#onError(fromId, e));
+
+						}).catch(e => this.#onError(fromId, e));
+
+					}).catch(e => this.#onError(fromId, e));
+
+
+				break;
+				case 'answer':
+
+					if (this.#participants[fromId].pc.signalingState == 'have-local-offer') {
+
+						await this.#participants[fromId].pc.setRemoteDescription(data).catch(e => this.#onError(fromId, e));
+
+					}
+
+				break;
+				default: // icecandidate
+
+					await this.#participants[fromId].pc.addIceCandidate(data).catch(e => this.#onError(fromId, e));
+
+			}
+
+		}
 
 	}
 
