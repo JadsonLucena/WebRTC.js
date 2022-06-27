@@ -120,7 +120,7 @@ class WebRTC {
 		this.#participants = {};
 
 
-		this.#onSignaler({room: room, fromId: this.#id, toId: 'broadcast', data: { type: 'invite' }});
+		this.signalInvite();
 
 	}
 
@@ -190,6 +190,11 @@ class WebRTC {
 
 	}
 
+	signalInvite(participantId = 'broadcast') {
+
+		this.#onSignaler({room: this.#room, fromId: this.#id, toId: participantId, data: { type: 'invite' }});
+
+	}
 
 	#createOffer(participantId, RTCOfferOptions = this.#RTCOfferOptions) {
 
