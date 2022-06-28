@@ -169,6 +169,11 @@ class WebRTC {
 					'stun:stun3.l.google.com:19302',
 					'stun:stun4.l.google.com:19302'
 				]
+			},
+			{
+				urls: ['stun:stun.services.mozilla.com'],
+				username: 'louis@mozilla.com',
+				credential: 'webrtcdemo'
 			}
 		], // https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
 		iceTransportPolicy = 'all',
