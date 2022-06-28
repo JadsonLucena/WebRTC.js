@@ -160,7 +160,17 @@ class WebRTC {
 		bundlePolicy = 'balanced', //max-compat
 		certificates = [],
 		iceCandidatePoolSize = 0,
-		iceServers = [], // https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
+		iceServers = [
+			{
+				urls: [
+					'stun:stun.l.google.com:19302',
+					'stun:stun1.l.google.com:19302',
+					'stun:stun2.l.google.com:19302',
+					'stun:stun3.l.google.com:19302',
+					'stun:stun4.l.google.com:19302'
+				]
+			}
+		], // https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
 		iceTransportPolicy = 'all',
 		rtcpMuxPolicy = 'require',
 		sdpSemantics = 'unified-plan' // https://webrtc.org/getting-started/unified-plan-transition-guide
