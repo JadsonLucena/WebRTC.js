@@ -5,7 +5,11 @@
 	https://blog.mozilla.org/webrtc/perfect-negotiation-in-webrtc/
 */
 
-class WebRTC {
+
+import Emitter from 'https://cdn.jsdelivr.net/gh/JadsonLucena/Emitter.mjs@1.1.0/src/Emitter.js';
+
+
+class WebRTC extends Emitter {
 
 	#room;
 
@@ -47,6 +51,8 @@ class WebRTC {
 		onOpen = (participantId, e) => console.log('open', participantId, e),
 		onSignaler = e => console.log('signaler', e)
 	} = {}) {
+
+		super();
 
 		this.room = room;
 
@@ -104,17 +110,83 @@ class WebRTC {
 		}
 
 
-		this.#onBeforeSendAnswer = onBeforeSendAnswer;
-		this.#onBeforeSendOffer = onBeforeSendOffer;
-		this.#onBeforeCreateAnswer = onBeforeCreateAnswer;
-		this.#onBeforeCreateOffer = onBeforeCreateOffer;
-		this.#onCallback = onCallback;
-		this.#onClose = onClose;
-		this.#onDataChannel = onDataChannel;
-		this.#onError = onError;
-		this.#onOpen = onOpen;
-		this.#onMessage = onMessage;
-		this.#onSignaler = onSignaler;
+		this.#onBeforeSendAnswer = async (participantId, state) => {
+
+			await onBeforeSendAnswer(participantId, state);
+
+			await super._emit('beforeSendAnswer', participantId, state);
+
+		};
+		this.#onBeforeSendOffer = async (participantId, state) => {
+
+			await onBeforeSendOffer(participantId, state);
+
+			await super._emit('beforeSendOffer', participantId, state);
+
+		};
+		this.#onBeforeCreateAnswer = async (participantId, state) => {
+
+			await onBeforeCreateAnswer(participantId, state);
+
+			await super._emit('beforeCreateAnswer', participantId, state);
+
+		};
+		this.#onBeforeCreateOffer = async (participantId, state) => {
+
+			await onBeforeCreateOffer(participantId, state);
+
+			await super._emit('beforeCreateOffer', participantId, state);
+
+		};
+		this.#onCallback = (participantId, e) => {
+
+			onCallback(participantId, e);
+
+			super._emit('callback', participantId, e);
+
+		};
+		this.#onClose = (participantId, e) => {
+
+			onClose(participantId, e);
+
+			super._emit('close', participantId, e);
+
+		};
+		this.#onDataChannel = (participantId, e) => {
+
+			onDataChannel(participantId, e);
+
+			super._emit('dataChannel', participantId, e);
+
+		};
+		this.#onError = (participantId, e) => {
+
+			onError(participantId, e);
+
+			super._emit('error', participantId, e);
+
+		};
+		this.#onOpen = (participantId, e) => {
+
+			onOpen(participantId, e);
+
+			super._emit('open', participantId, e);
+
+		};
+		this.#onMessage = (participantId, e) => {
+
+			onMessage(participantId, e);
+
+			super._emit('message', participantId, e);
+
+		};
+		this.#onSignaler = data => {
+
+			onSignaler(data);
+
+			super._emit('signaler', data);
+
+		};
 
 
 		this.#participants = {};
@@ -1531,3 +1603,6 @@ class WebRTC {
 	}
 
 }
+
+
+export default WebRTC;
